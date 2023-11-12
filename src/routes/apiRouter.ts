@@ -1,5 +1,18 @@
 import { Router } from "express";
-import Paths from "./paths";
+import {
+  AUTH_BASE,
+  AUTH_LOGIN,
+  AUTH_REGISTER,
+  SHOPPING_LIST_BASE,
+  SHOPPING_LIST_LISTS,
+  SHOPPING_LIST_GET,
+  SHOPPING_LIST_DELETE,
+  SHOPPING_LIST_MEMBERS_BASE,
+  SHOPPING_LIST_MEMBERS_DELETE,
+  SHOPPING_LIST_ITEMS_BASE,
+  SHOPPING_LIST_ITEMS_PATCH,
+  SHOPPING_LIST_ITEMS_DELETE,
+} from "./paths";
 import {
   itemToShoppingListValidation,
   createShoppingListValidation,
@@ -7,7 +20,7 @@ import {
   getShoppingListValidation,
 } from "./valid/shoppingLists";
 import { expressjwt } from "express-jwt";
-import dotnenv from "dotenv";
+import dotenv from "dotenv";
 import { authValidation } from "./valid/auth";
 import {
   deleteShoppingList,
@@ -20,12 +33,12 @@ import {
 } from "../services/shoppingList";
 import { login, register } from "../services/authorize";
 
-dotnenv.config();
+dotenv.config();
 
 const apiRouter = Router({});
 
 apiRouter.use(
-  Paths.ShoppingList.Lists,
+  SHOPPING_LIST_LISTS,
   expressjwt({
     secret: process.env.JWT_SECRET ?? "",
     algorithms: ["HS256"],
@@ -35,21 +48,21 @@ apiRouter.use(
 
 const authRouter = Router();
 
-authRouter.post(Paths.Auth.Register, authValidation, register);
-authRouter.post(Paths.Auth.Login, authValidation, login);
+authRouter.post(AUTH_REGISTER, authValidation, register);
+authRouter.post(AUTH_LOGIN, authValidation, login);
 
-apiRouter.use(Paths.Auth.Base, authRouter);
+apiRouter.use(AUTH_BASE, authRouter);
 
 const shoppingListRouter = Router();
 
 shoppingListRouter.get(
-  Paths.ShoppingList.Get,
+  SHOPPING_LIST_GET,
   getShoppingListValidation,
   getShoppingList
 );
 
 shoppingListRouter.delete(
-  Paths.ShoppingList.Delete,
+  SHOPPING_LIST_DELETE,
   getShoppingListValidation,
   deleteShoppingList
 );
@@ -57,37 +70,37 @@ shoppingListRouter.delete(
 shoppingListRouter.post("", createShoppingListValidation, createShoppingList);
 
 shoppingListRouter.post(
-  Paths.ShoppingList.Members.Base,
+  SHOPPING_LIST_MEMBERS_BASE,
   addMemberToShoppingListValidation,
   addMemberToShoppingList
 );
 
 shoppingListRouter.delete(
-  Paths.ShoppingList.Members.Delete,
+  SHOPPING_LIST_MEMBERS_DELETE,
   addMemberToShoppingListValidation,
   deleteMemberFromShoppingList
 );
 
 shoppingListRouter.post(
-  Paths.ShoppingList.Items.Base,
+  SHOPPING_LIST_ITEMS_BASE,
   itemToShoppingListValidation,
   addItemToShoppingList
 );
 
 shoppingListRouter.patch(
-  Paths.ShoppingList.Items.Patch,
+  SHOPPING_LIST_ITEMS_PATCH,
   itemToShoppingListValidation,
   addItemToShoppingList
 );
 
 shoppingListRouter.delete(
-  Paths.ShoppingList.Items.Delete,
+  SHOPPING_LIST_ITEMS_DELETE,
   itemToShoppingListValidation,
   addItemToShoppingList
 );
 
 apiRouter.use(
-  Paths.ShoppingList.Base,
+  SHOPPING_LIST_BASE,
   expressjwt({
     secret: process.env.JWT_SECRET ?? "",
     algorithms: ["HS256"],
