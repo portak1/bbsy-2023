@@ -1,23 +1,16 @@
 import { Router } from "express";
-import {
-  AUTH_BASE,
-  AUTH_LOGIN,
-  AUTH_REGISTER,
-  SHOPPING_LIST_BASE,
-  SHOPPING_LIST_LISTS,
-  SHOPPING_LIST_GET,
-  SHOPPING_LIST_DELETE,
-  SHOPPING_LIST_MEMBERS_BASE,
-  SHOPPING_LIST_MEMBERS_DELETE,
-  SHOPPING_LIST_ITEMS_BASE,
-  SHOPPING_LIST_ITEMS_PATCH,
-  SHOPPING_LIST_ITEMS_DELETE,
-} from "./paths";
+import Paths from "./paths";
+
 import {
   itemToShoppingListValidation,
   createShoppingListValidation,
   addMemberToShoppingListValidation,
   getShoppingListValidation,
+  deleteShoppingListValidation,
+  removeMemberFromShoppingListValidation,
+  getItemsFromShoppingListValidation,
+  removeItemFromShoppingListValidation,
+  updateItemInShoppingListValidation,
 } from "./valid/shoppingLists";
 import { expressjwt } from "express-jwt";
 import dotenv from "dotenv";
@@ -30,6 +23,12 @@ import {
   addMemberToShoppingList,
   deleteMemberFromShoppingList,
   addItemToShoppingList,
+  getShoppingListMembers,
+  getItemsFromShoppingList,
+  deleteItemFromShoppingList,
+  updateItemInShoppingList,
+  updateMemberInShoppingList,
+  updateShoppingList
 } from "../services/shoppingList";
 import { login, register } from "../services/authorize";
 
@@ -38,7 +37,7 @@ dotenv.config();
 const apiRouter = Router({});
 
 apiRouter.use(
-  SHOPPING_LIST_LISTS,
+  Paths.Base,
   expressjwt({
     secret: process.env.JWT_SECRET ?? "",
     algorithms: ["HS256"],
@@ -46,61 +45,95 @@ apiRouter.use(
   getShoppingLists
 );
 
+
+
 const authRouter = Router();
 
-authRouter.post(AUTH_REGISTER, authValidation, register);
-authRouter.post(AUTH_LOGIN, authValidation, login);
+authRouter.post(Paths.Auth.Register, authValidation, register);
+authRouter.post(Paths.Auth.Login, authValidation, login);
 
-apiRouter.use(AUTH_BASE, authRouter);
+apiRouter.use(Paths.Auth.Base, authRouter);
 
 const shoppingListRouter = Router();
+shoppingListRouter.get(Paths.ShoppingList.Get ,getShoppingListValidation, getShoppingList);
 
-shoppingListRouter.get(
-  SHOPPING_LIST_GET,
-  getShoppingListValidation,
-  getShoppingList
-);
+shoppingListRouter.get("", getShoppingLists);
 
 shoppingListRouter.delete(
-  SHOPPING_LIST_DELETE,
-  getShoppingListValidation,
+  Paths.ShoppingList.Delete,
+  deleteShoppingListValidation,
   deleteShoppingList
+);
+
+shoppingListRouter.patch(
+  Paths.ShoppingList.Patch,
+  createShoppingListValidation,
+  updateShoppingList
 );
 
 shoppingListRouter.post("", createShoppingListValidation, createShoppingList);
 
-shoppingListRouter.post(
-  SHOPPING_LIST_MEMBERS_BASE,
+
+//MEMBERS
+const shoppingListMembersRouter = Router({mergeParams: true});
+
+shoppingListMembersRouter.get(
+  Paths.ShoppingList.Members.Get,
+  getShoppingListValidation,
+  getShoppingListMembers
+);
+
+shoppingListMembersRouter.delete(
+  Paths.ShoppingList.Members.Delete,
+  removeMemberFromShoppingListValidation,
+  deleteMemberFromShoppingList
+);
+
+shoppingListMembersRouter.post(
+  Paths.ShoppingList.Members.Create,
   addMemberToShoppingListValidation,
   addMemberToShoppingList
 );
 
-shoppingListRouter.delete(
-  SHOPPING_LIST_MEMBERS_DELETE,
+shoppingListMembersRouter.patch(
+  Paths.ShoppingList.Members.Patch,
   addMemberToShoppingListValidation,
-  deleteMemberFromShoppingList
+  updateMemberInShoppingList
 );
 
-shoppingListRouter.post(
-  SHOPPING_LIST_ITEMS_BASE,
+shoppingListRouter.use(Paths.ShoppingList.Members.Base, shoppingListMembersRouter);
+
+//ITEMS
+const shoppingListItemsRouter = Router({mergeParams: true});
+
+shoppingListItemsRouter.get(
+  Paths.ShoppingList.Items.Get,
+  getItemsFromShoppingListValidation,
+  getItemsFromShoppingList
+);
+
+shoppingListItemsRouter.delete(
+  Paths.ShoppingList.Items.Delete,
+  removeItemFromShoppingListValidation,
+  deleteItemFromShoppingList
+);
+
+shoppingListItemsRouter.post(
+  Paths.ShoppingList.Items.Create,
   itemToShoppingListValidation,
   addItemToShoppingList
 );
 
-shoppingListRouter.patch(
-  SHOPPING_LIST_ITEMS_PATCH,
-  itemToShoppingListValidation,
-  addItemToShoppingList
+shoppingListItemsRouter.patch(
+  Paths.ShoppingList.Items.Patch,
+  updateItemInShoppingListValidation,
+  updateItemInShoppingList
 );
 
-shoppingListRouter.delete(
-  SHOPPING_LIST_ITEMS_DELETE,
-  itemToShoppingListValidation,
-  addItemToShoppingList
-);
+shoppingListRouter.use(Paths.ShoppingList.Items.Base, shoppingListItemsRouter);
 
 apiRouter.use(
-  SHOPPING_LIST_BASE,
+  Paths.ShoppingList.Base,
   expressjwt({
     secret: process.env.JWT_SECRET ?? "",
     algorithms: ["HS256"],

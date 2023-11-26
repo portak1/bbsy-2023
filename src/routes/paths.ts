@@ -1,39 +1,30 @@
-const API_BASE = "/api";
-
-// Auth Paths
-const AUTH_BASE = API_BASE + "/auth";
-const AUTH_LOGIN = AUTH_BASE + "/login";
-const AUTH_REGISTER = AUTH_BASE + "/register";
-
-// Shopping List Paths
-const SHOPPING_LIST_BASE = API_BASE + "/list";
-const SHOPPING_LIST_LISTS = SHOPPING_LIST_BASE + "/lists";
-const SHOPPING_LIST_GET = SHOPPING_LIST_BASE + "/:id";
-const SHOPPING_LIST_DELETE = SHOPPING_LIST_BASE + "/:id";
-
-// Shopping List Members Paths
-const SHOPPING_LIST_MEMBERS_BASE = SHOPPING_LIST_GET + "/users";
-const SHOPPING_LIST_MEMBERS_GET = SHOPPING_LIST_MEMBERS_BASE + "/:userId";
-const SHOPPING_LIST_MEMBERS_DELETE = SHOPPING_LIST_MEMBERS_BASE + "/:userId";
-
-// Shopping List Items Paths
-const SHOPPING_LIST_ITEMS_BASE = SHOPPING_LIST_GET + "/item";
-const SHOPPING_LIST_ITEMS_PATCH = SHOPPING_LIST_ITEMS_BASE + "/:itemId";
-const SHOPPING_LIST_ITEMS_DELETE = SHOPPING_LIST_ITEMS_BASE + "/:itemId";
-
-export {
-  API_BASE,
-  AUTH_BASE,
-  AUTH_LOGIN,
-  AUTH_REGISTER,
-  SHOPPING_LIST_BASE,
-  SHOPPING_LIST_LISTS,
-  SHOPPING_LIST_GET,
-  SHOPPING_LIST_DELETE,
-  SHOPPING_LIST_MEMBERS_BASE,
-  SHOPPING_LIST_MEMBERS_GET,
-  SHOPPING_LIST_MEMBERS_DELETE,
-  SHOPPING_LIST_ITEMS_BASE,
-  SHOPPING_LIST_ITEMS_PATCH,
-  SHOPPING_LIST_ITEMS_DELETE,
+const Paths = {
+  Base: "/api",
+  Auth: {
+    Base: "/auth",
+    Login: "/login",
+    Register: "/register",
+  },
+  ShoppingList: {
+    Base: "/list",
+    Get: "/:id",
+    Delete: "/:id",
+    Patch : "/:id",
+    Members: {
+      Base: "/:id/users",
+      Get: "",
+      Delete: "",
+      Create: "",
+      Patch: "",
+    },
+    Items: {
+      Base: "/:id/item",
+      Patch: "/:itemId",
+      Delete: "/:itemId",
+      Create: "",
+      Get: "",
+    },
+  },
 };
+
+export default Paths;
