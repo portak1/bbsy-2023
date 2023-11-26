@@ -5,7 +5,7 @@ const ShoppingListSchema = new mongoose.Schema({
     items: [ShoppingListItemSchema],
     users: [{
         _id: { type: mongoose.Schema.Types.ObjectId, required: true },
-        isOwner: { type: Boolean, required: true }
+        isOwner: { type: Boolean, required: true },
     }]
 });
 
